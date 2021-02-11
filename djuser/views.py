@@ -9,9 +9,10 @@ from .forms import LoginForm
 def home(request):
     user_id = request.session.get('user')
     if user_id:
-        djuser = DJuser.objects.get(pk=user_id)
-        return HttpResponse(djuser.username)
-    return HttpResponse("Home!")
+        user = DJuser.objects.get(pk=user_id)
+    else:
+        user = None
+    return render(request, 'home.html', {'user': user})
 
 
 def logout(request):
@@ -47,10 +48,16 @@ def register(request):
         elif password != re_password:
             res_data['error'] = '비밀번호가 다릅니다'
         else:
-            djuser = DJuser(
-                username=username,
-                useremail=email,
-                password=make_password(password),
-            )
-            djuser.save()
+            try:
+                DJuser.objects.get(username=username)
+                res_data['error'] = "이미 아이디가 존재합니다"
+            except(DJuser.DoesNotExist):
+
+                djuser = DJuser(
+                    username=username,
+                    useremail=email,
+                    password=make_password(password),
+                )
+                djuser.save()
+                return redirect('/')
         return render(request, "register.html", res_data)
