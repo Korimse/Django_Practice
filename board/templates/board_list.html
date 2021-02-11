@@ -43,7 +43,15 @@
         </ul>
         </nav>
         <div class="row">
-          <div class="col-12">
+          <div class="col-6">
+          <div class="form-group">
+          <form method="POST" action=".">
+          {% csrf_token %}
+            <label class="col-form-label" for="inputDefault">검색</label>
+            <input type="text" class="form-control" placeholder="제목 입력" name = "search_title" id="search_title">
+            <button type="submit" class="btn btn-secondary">검색</button>
+          </form>
+          </div>
             <button class="btn btn-secondary" onclick="location.href='/board/write'">글쓰기</button>
             <button class="btn btn-secondary" onclick="location.href='/'">홈으로</button>
           </div>
