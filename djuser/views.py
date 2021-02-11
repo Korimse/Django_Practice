@@ -1,8 +1,42 @@
-from django.shortcuts import render
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from .models import DJuser
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 
 # Create your views here.
+
+
+def home(request):
+    user_id = request.session.get('user')
+    if user_id:
+        djuser = DJuser.objects.get(pk=user_id)
+        return HttpResponse(djuser.username)
+    return HttpResponse("Home!")
+
+
+def login(request):
+    if request.method == 'GET':
+        return render(request, "login.html")
+    elif request.method == 'POST':
+        username = request.POST.get('username', None)
+        password = request.POST.get('password', None)
+
+        res_data = {}
+        if not (username and password):
+            res_data['error'] = '모든 값을 입력해야합니다.'
+        else:
+            try:
+                djuser = DJuser.objects.get(username=username)
+            except(DJuser.DoesNotExist):
+                res_data['error'] = '아이디가 틀렸습니다.'
+                return render(request, "login.html", res_data)
+            if check_password(password, djuser.password):
+                request.session['user'] = djuser.id
+                return redirect('/')
+            else:
+                res_data['error'] = '비밀번호를 틀렸습니다.'
+
+        return render(request, "login.html", res_data)
 
 
 def register(request):
