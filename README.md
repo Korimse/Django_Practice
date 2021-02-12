@@ -1,5 +1,4 @@
 # Django_Practice
 
 Study Django
-
-1. 회원가입
+- 간단한 커뮤니티
